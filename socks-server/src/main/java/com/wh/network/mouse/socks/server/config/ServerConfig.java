@@ -15,6 +15,10 @@ public class ServerConfig {
      */
     private int workThreads;
     /**
+     * 代理线程数
+     */
+    private int proxyThreads;
+    /**
      * 连接超时时间 （单位：秒）
      */
     private int connectTimeout;
