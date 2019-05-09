@@ -3,6 +3,7 @@ package com.wh.network.mouse.socks.server;
 import com.wh.network.mouse.socks.server.config.ServerConfig;
 import com.wh.network.mouse.socks.server.handler.Socks5CommandRequestHandler;
 import com.wh.network.mouse.socks.server.handler.Socks5InitialRequestHandler;
+import com.wh.network.mouse.socks.server.handler.Socks5PasswordAuthRequestHandler;
 import com.wh.network.mouse.util.ConfigConstants;
 import com.wh.network.mouse.util.FileUtil;
 import io.netty.bootstrap.ServerBootstrap;
@@ -47,6 +48,7 @@ public class SocksServer {
                                 new Socks5InitialRequestDecoder(),
                                 new Socks5InitialRequestHandler(),
                                 new Socks5PasswordAuthRequestDecoder(),
+                                new Socks5PasswordAuthRequestHandler(),
                                 new Socks5CommandRequestDecoder(),
                                 new Socks5CommandRequestHandler(proxy, NioSocketChannel.class)
                         );
