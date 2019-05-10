@@ -1,11 +1,13 @@
 package com.wh.network.mouse.socks.server.handler;
 
+import com.wh.network.mouse.socks.server.config.ServerConfig;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInitializer;
+import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.socket.SocketChannel;
@@ -20,10 +22,12 @@ public class Socks5CommandRequestHandler extends SimpleChannelInboundHandler<Def
 
     private EventLoopGroup eventLoopGroup;
     private Class channelClass;
+    private ServerConfig serverConfig;
 
-    public Socks5CommandRequestHandler(EventLoopGroup eventLoopGroup, Class<? extends Channel> channelClass) {
+    public Socks5CommandRequestHandler(EventLoopGroup eventLoopGroup, Class<? extends Channel> channelClass, ServerConfig serverConfig) {
         this.eventLoopGroup = eventLoopGroup;
         this.channelClass = channelClass;
+        this.serverConfig = serverConfig;
     }
 
     @Override
@@ -32,6 +36,7 @@ public class Socks5CommandRequestHandler extends SimpleChannelInboundHandler<Def
             Bootstrap bootstrap = new Bootstrap();
             bootstrap.group(eventLoopGroup)
                     .channel(channelClass)
+                    .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, serverConfig.getConnectTimeout() * 1000)
                     .handler(new ChannelInitializer<SocketChannel>() {
                         @Override
                         protected void initChannel(SocketChannel ch) throws Exception {

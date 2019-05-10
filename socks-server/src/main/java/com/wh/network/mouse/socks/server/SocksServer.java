@@ -9,7 +9,6 @@ import com.wh.network.mouse.util.FileUtil;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
-import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
@@ -19,6 +18,7 @@ import io.netty.handler.codec.socksx.v5.Socks5CommandRequestDecoder;
 import io.netty.handler.codec.socksx.v5.Socks5InitialRequestDecoder;
 import io.netty.handler.codec.socksx.v5.Socks5PasswordAuthRequestDecoder;
 import io.netty.handler.codec.socksx.v5.Socks5ServerEncoder;
+import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.timeout.IdleStateHandler;
 import lombok.extern.slf4j.Slf4j;
@@ -37,20 +37,19 @@ public class SocksServer {
         ServerBootstrap serverBootstrap = new ServerBootstrap();
         serverBootstrap.group(boss, worker)
                 .channel(NioServerSocketChannel.class)
-                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, serverConfig.getConnectTimeout() * 1000)
                 .childHandler(new ChannelInitializer<SocketChannel>() {
                     @Override
                     protected void initChannel(SocketChannel ch) throws Exception {
                         ch.pipeline().addLast(
                                 new IdleStateHandler(serverConfig.getReaderIdleTime(), serverConfig.getWriterIdleTime(), serverConfig.getAllIdleTime()),
-                                new LoggingHandler(),
+                                new LoggingHandler(LogLevel.INFO),
                                 Socks5ServerEncoder.DEFAULT,
                                 new Socks5InitialRequestDecoder(),
                                 new Socks5InitialRequestHandler(),
                                 new Socks5PasswordAuthRequestDecoder(),
                                 new Socks5PasswordAuthRequestHandler(),
                                 new Socks5CommandRequestDecoder(),
-                                new Socks5CommandRequestHandler(proxy, NioSocketChannel.class)
+                                new Socks5CommandRequestHandler(proxy, NioSocketChannel.class, serverConfig)
                         );
                     }
                 });
