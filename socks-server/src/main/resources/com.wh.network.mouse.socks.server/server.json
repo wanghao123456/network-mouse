@@ -1,0 +1,9 @@
+{
+  "port": 1024,
+  "workThreads": 0,
+  "proxyThreads": 0,
+  "connectTimeout": 3,
+  "readerIdleTime": 30,
+  "writerIdleTime": 30,
+  "allIdleTime": 30
+}

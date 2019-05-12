@@ -37,12 +37,12 @@ public class SocksServer {
         ServerBootstrap serverBootstrap = new ServerBootstrap();
         serverBootstrap.group(boss, worker)
                 .channel(NioServerSocketChannel.class)
+                .handler(new LoggingHandler(LogLevel.INFO))
                 .childHandler(new ChannelInitializer<SocketChannel>() {
                     @Override
                     protected void initChannel(SocketChannel ch) throws Exception {
                         ch.pipeline().addLast(
                                 new IdleStateHandler(serverConfig.getReaderIdleTime(), serverConfig.getWriterIdleTime(), serverConfig.getAllIdleTime()),
-                                new LoggingHandler(LogLevel.INFO),
                                 Socks5ServerEncoder.DEFAULT,
                                 new Socks5InitialRequestDecoder(),
                                 new Socks5InitialRequestHandler(),
