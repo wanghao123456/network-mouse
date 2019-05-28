@@ -1,0 +1,15 @@
+[
+  {
+    "userName": "admin",
+    "passWord": "admin"
+  },
+  {
+    "userName": "test",
+    "passWord": "test",
+    "limit": true,
+    "writeLimit": 10,
+    "readLimit": 10,
+    "checkInterval": 1,
+    "maxTime": 10
+  }
+]

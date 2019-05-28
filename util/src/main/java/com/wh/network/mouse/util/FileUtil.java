@@ -24,15 +24,18 @@ public class FileUtil {
 
     private static String readFileToString(String filePath) {
         File configFile = new File(filePath);
-        int configFileLength = (int) configFile.length();
-        String configContent = null;
-        try (FileReader fileReader = new FileReader(configFile, UTF_8)) {
-            char[] charBuffer = new char[configFileLength];
-            fileReader.read(charBuffer, 0, configFileLength);
-            configContent = new String(charBuffer);
-        } catch (IOException e) {
-            log.error("读取配置文件：{}出现异常，异常如下：{}", filePath, e);
+        if (configFile.exists()) {
+            String configContent = null;
+            try (FileReader fileReader = new FileReader(configFile, UTF_8)) {
+                int configFileLength = (int) configFile.length();
+                char[] charBuffer = new char[configFileLength];
+                fileReader.read(charBuffer, 0, configFileLength);
+                configContent = new String(charBuffer);
+            } catch (IOException e) {
+                log.error("读取配置文件：{}出现异常，异常如下：{}", filePath, e);
+            }
+            return configContent;
         }
-        return configContent;
+        throw new RuntimeException("配置文件：{" + filePath + "}不存在");
     }
 }
