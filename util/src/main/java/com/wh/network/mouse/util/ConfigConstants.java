@@ -10,9 +10,9 @@ public class ConfigConstants {
     public static final String CLIENT_DEFAULT_CONFIG_FILE_NAME = "client.json";
     public static final String USER_DEFAULT_CONFIG_FILE_NAME = "user.json";
 
-    public static final String CLASS_PATH = ConfigConstants.class.getResource("/").getPath();
+    public static final String CONFIG_PATH = System.getProperty("user.dir") + "/config/";
 
-    public static final String SERVER_DEFAULT_CONFIG_FILE_PATH = CLASS_PATH + SERVER_DEFAULT_CONFIG_FILE_NAME;
-    public static final String CLIENT_DEFAULT_CONFIG_FILE_PATH = CLASS_PATH + CLIENT_DEFAULT_CONFIG_FILE_NAME;
-    public static final String USER_DEFAULT_CONFIG_FILE_PATH = CLASS_PATH + USER_DEFAULT_CONFIG_FILE_NAME;
+    public static final String SERVER_DEFAULT_CONFIG_FILE_PATH = CONFIG_PATH + SERVER_DEFAULT_CONFIG_FILE_NAME;
+    public static final String CLIENT_DEFAULT_CONFIG_FILE_PATH = CONFIG_PATH + CLIENT_DEFAULT_CONFIG_FILE_NAME;
+    public static final String USER_DEFAULT_CONFIG_FILE_PATH = CONFIG_PATH + USER_DEFAULT_CONFIG_FILE_NAME;
 }
