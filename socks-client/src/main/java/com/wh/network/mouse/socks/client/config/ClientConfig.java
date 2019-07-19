@@ -13,11 +13,19 @@ public class ClientConfig {
     /**
      * 代理服务host
      */
-    private int remoteHost;
+    private String remoteHost;
     /**
      * 代理服务port
      */
     private int remotePort;
+    /**
+     * 用户名
+     */
+    private String userName;
+    /**
+     * 密码
+     */
+    private String passWord;
     /**
      * 工作线程数
      */

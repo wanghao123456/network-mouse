@@ -1,4 +1,4 @@
-package com.wh.network.mouse.socks.server.handler;
+package com.wh.network.mouse.handler;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;

@@ -1,4 +1,4 @@
-package com.wh.network.mouse.socks.server.handler;
+package com.wh.network.mouse.socks.client.handler;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -16,7 +16,7 @@ public class Socks5InitialRequestHandler extends SimpleChannelInboundHandler<Def
     protected void channelRead0(ChannelHandlerContext ctx, DefaultSocks5InitialRequest msg) throws Exception {
         log.info("初始化socks5连接，详细信息：{}", msg);
         if (msg.decoderResult().isSuccess()) {
-            Socks5InitialResponse socks5InitialResponse = new DefaultSocks5InitialResponse(Socks5AuthMethod.PASSWORD);
+            Socks5InitialResponse socks5InitialResponse = new DefaultSocks5InitialResponse(Socks5AuthMethod.NO_AUTH);
             ctx.writeAndFlush(socks5InitialResponse);
             ctx.pipeline().remove(this);
         } else {

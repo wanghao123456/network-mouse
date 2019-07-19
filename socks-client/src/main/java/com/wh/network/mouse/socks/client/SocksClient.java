@@ -1,6 +1,7 @@
 package com.wh.network.mouse.socks.client;
 
 import com.wh.network.mouse.socks.client.config.ClientConfig;
+import com.wh.network.mouse.socks.client.handler.ChannelInitializerHandler;
 import com.wh.network.mouse.util.ConfigConstants;
 import com.wh.network.mouse.util.FileUtil;
 import io.netty.bootstrap.ServerBootstrap;
@@ -17,31 +18,46 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class SocksClient {
 
-    public void start() {
-        String filePath = System.getProperty(ConfigConstants.CLIENT_CONFIG_KEY, ConfigConstants.CLIENT_DEFAULT_CONFIG_FILE_PATH);
-        ClientConfig clientConfig = FileUtil.readFileToBean(filePath, ClientConfig.class);
-        log.info("配置信息加载完毕，详情如下：{}", clientConfig);
-        EventLoopGroup boss = new NioEventLoopGroup(1);
-        EventLoopGroup worker = new NioEventLoopGroup(clientConfig.getWorkThreads());
-        EventLoopGroup proxy = new NioEventLoopGroup(clientConfig.getProxyThreads());
+    private EventLoopGroup boss = null;
+    private EventLoopGroup worker = null;
+    private EventLoopGroup proxy = null;
 
-        ServerBootstrap serverBootstrap = new ServerBootstrap();
-        serverBootstrap.group(boss, worker)
-                .channel(NioServerSocketChannel.class)
-                .handler(new LoggingHandler(LogLevel.INFO))
-                .childHandler(new ChannelInitializer<SocketChannel>() {
-                    @Override
-                    protected void initChannel(SocketChannel ch) throws Exception {
-                    }
-                });
+    public void start() {
         try {
+            String filePath = System.getProperty(ConfigConstants.CLIENT_CONFIG_KEY, ConfigConstants.CLIENT_DEFAULT_CONFIG_FILE_PATH);
+            ClientConfig clientConfig = FileUtil.readFileToBean(filePath, ClientConfig.class);
+            log.info("配置信息加载完毕，详情如下：{}", clientConfig);
+            boss = new NioEventLoopGroup(1);
+            worker = new NioEventLoopGroup(clientConfig.getWorkThreads());
+            proxy = new NioEventLoopGroup(clientConfig.getProxyThreads());
+
+            ServerBootstrap serverBootstrap = new ServerBootstrap();
+            serverBootstrap.group(boss, worker)
+                    .channel(NioServerSocketChannel.class)
+                    .handler(new LoggingHandler(LogLevel.INFO))
+                    .childHandler(new ChannelInitializer<SocketChannel>() {
+                        @Override
+                        protected void initChannel(SocketChannel ch) throws Exception {
+                            ch.pipeline().addLast(new ChannelInitializerHandler(clientConfig, proxy));
+                        }
+                    });
             ChannelFuture channelFuture = serverBootstrap.bind(clientConfig.getLocalPort()).sync();
             channelFuture.channel().closeFuture().sync();
-        } catch (InterruptedException e) {
+        } catch (Exception e) {
             log.error("服务启动失败，异常如下：{}", e);
         } finally {
+            close();
+        }
+    }
+
+    public void close() {
+        if (boss != null) {
             boss.shutdownGracefully();
+        }
+        if (worker != null) {
             worker.shutdownGracefully();
+        }
+        if (proxy != null) {
             proxy.shutdownGracefully();
         }
     }

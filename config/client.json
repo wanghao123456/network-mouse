@@ -1,0 +1,10 @@
+{
+  "localPort": 1180,
+  "remoteHost": "127.0.0.1",
+  "remotePort": 1024,
+  "userName": "admin",
+  "passWord": "admin",
+  "workThreads": 1,
+  "proxyThreads": 1,
+  "connectTimeout": 3
+}
