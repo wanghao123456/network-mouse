@@ -9,6 +9,7 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.socksx.v5.Socks5CommandRequestDecoder;
 import io.netty.handler.codec.socksx.v5.Socks5InitialRequestDecoder;
 import io.netty.handler.codec.socksx.v5.Socks5ServerEncoder;
+import io.netty.handler.ssl.SslContext;
 
 public class ChannelInitializerHandler extends ChannelInitializer {
 
@@ -16,9 +17,12 @@ public class ChannelInitializerHandler extends ChannelInitializer {
 
     private EventLoopGroup proxy;
 
-    public ChannelInitializerHandler(ClientConfig clientConfig, EventLoopGroup proxy) {
+    private SslContext sslContext;
+
+    public ChannelInitializerHandler(ClientConfig clientConfig, EventLoopGroup proxy, SslContext sslContext) {
         this.clientConfig = clientConfig;
         this.proxy = proxy;
+        this.sslContext = sslContext;
     }
 
     @Override
@@ -28,7 +32,7 @@ public class ChannelInitializerHandler extends ChannelInitializer {
                 new Socks5InitialRequestDecoder(),
                 new Socks5InitialRequestHandler(),
                 new Socks5CommandRequestDecoder(),
-                new Socks5CommandRequestHandler(proxy, NioSocketChannel.class, clientConfig),
+                new Socks5CommandRequestHandler(proxy, NioSocketChannel.class, clientConfig, sslContext),
                 new CloseEventHandler()
         );
     }

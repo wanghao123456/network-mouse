@@ -1,4 +1,9 @@
 {
+  "ssl": true,
+  "storetype": "JKS",
+  "keyalg": "SunX509",
+  "keypass": "network-mouse",
+  "storepass": "network-mouse",
   "localPort": 1180,
   "remoteHost": "127.0.0.1",
   "remotePort": 1024,

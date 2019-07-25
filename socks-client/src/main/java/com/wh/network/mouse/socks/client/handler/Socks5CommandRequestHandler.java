@@ -15,6 +15,7 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.codec.socksx.v5.DefaultSocks5CommandRequest;
 import io.netty.handler.codec.socksx.v5.Socks5CommandType;
 import io.netty.handler.proxy.Socks5ProxyHandler;
+import io.netty.handler.ssl.SslContext;
 
 import java.net.InetSocketAddress;
 
@@ -23,11 +24,13 @@ public class Socks5CommandRequestHandler extends SimpleChannelInboundHandler<Def
     private EventLoopGroup eventLoopGroup;
     private Class channelClass;
     private ClientConfig clientConfig;
+    private SslContext sslContext;
 
-    public Socks5CommandRequestHandler(EventLoopGroup eventLoopGroup, Class<? extends Channel> channelClass, ClientConfig clientConfig) {
+    public Socks5CommandRequestHandler(EventLoopGroup eventLoopGroup, Class<? extends Channel> channelClass, ClientConfig clientConfig, SslContext sslContext) {
         this.eventLoopGroup = eventLoopGroup;
         this.channelClass = channelClass;
         this.clientConfig = clientConfig;
+        this.sslContext = sslContext;
     }
 
     @Override
@@ -40,6 +43,9 @@ public class Socks5CommandRequestHandler extends SimpleChannelInboundHandler<Def
                     .handler(new ChannelInitializer<SocketChannel>() {
                         @Override
                         protected void initChannel(SocketChannel ch) throws Exception {
+                            if (clientConfig.isSsl()) {
+                                ch.pipeline().addFirst(sslContext.newHandler(ch.alloc()));
+                            }
                             ch.pipeline().addLast(
                                     new Socks5ProxyHandler(new InetSocketAddress(clientConfig.getRemoteHost(), clientConfig.getRemotePort()),
                                             clientConfig.getUserName(), clientConfig.getPassWord()),

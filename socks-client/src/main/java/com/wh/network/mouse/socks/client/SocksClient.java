@@ -6,14 +6,18 @@ import com.wh.network.mouse.util.ConfigConstants;
 import com.wh.network.mouse.util.FileUtil;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelInitializer;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
+import io.netty.handler.ssl.SslContext;
+import io.netty.handler.ssl.SslContextBuilder;
 import lombok.extern.slf4j.Slf4j;
+
+import javax.net.ssl.TrustManagerFactory;
+import java.io.FileInputStream;
+import java.security.KeyStore;
 
 @Slf4j
 public class SocksClient {
@@ -24,9 +28,8 @@ public class SocksClient {
 
     public void start() {
         try {
-            String filePath = System.getProperty(ConfigConstants.CLIENT_CONFIG_KEY, ConfigConstants.CLIENT_DEFAULT_CONFIG_FILE_PATH);
-            ClientConfig clientConfig = FileUtil.readFileToBean(filePath, ClientConfig.class);
-            log.info("配置信息加载完毕，详情如下：{}", clientConfig);
+            ClientConfig clientConfig = getClientConfig();
+            SslContext sslContext = getSslContext(clientConfig);
             boss = new NioEventLoopGroup(1);
             worker = new NioEventLoopGroup(clientConfig.getWorkThreads());
             proxy = new NioEventLoopGroup(clientConfig.getProxyThreads());
@@ -34,13 +37,8 @@ public class SocksClient {
             ServerBootstrap serverBootstrap = new ServerBootstrap();
             serverBootstrap.group(boss, worker)
                     .channel(NioServerSocketChannel.class)
-                    .handler(new LoggingHandler(LogLevel.INFO))
-                    .childHandler(new ChannelInitializer<SocketChannel>() {
-                        @Override
-                        protected void initChannel(SocketChannel ch) throws Exception {
-                            ch.pipeline().addLast(new ChannelInitializerHandler(clientConfig, proxy));
-                        }
-                    });
+                    .handler(new LoggingHandler(LogLevel.ERROR))
+                    .childHandler(new ChannelInitializerHandler(clientConfig, proxy, sslContext));
             ChannelFuture channelFuture = serverBootstrap.bind(clientConfig.getLocalPort()).sync();
             channelFuture.channel().closeFuture().sync();
         } catch (Exception e) {
@@ -48,6 +46,29 @@ public class SocksClient {
         } finally {
             close();
         }
+    }
+
+    private ClientConfig getClientConfig() {
+        String filePath = System.getProperty(ConfigConstants.CLIENT_CONFIG_KEY, ConfigConstants.CLIENT_DEFAULT_CONFIG_FILE_PATH);
+        ClientConfig clientConfig = FileUtil.readFileToBean(filePath, ClientConfig.class);
+        log.info("配置信息加载完毕，详情如下：{}", clientConfig);
+        return clientConfig;
+    }
+
+    private SslContext getSslContext(ClientConfig clientConfig) {
+        if (clientConfig.isSsl()) {
+            String keystoreConfigFilePath = System.getProperty(ConfigConstants.KEYSTORE_CONFIG_KEY, ConfigConstants.KEYSTORE_DEFAULT_CONFIG_FILE_PATH);
+            try (FileInputStream keyStoreFileInputStream = new FileInputStream(keystoreConfigFilePath)) {
+                KeyStore keyStore = KeyStore.getInstance(clientConfig.getStoretype());
+                keyStore.load(keyStoreFileInputStream, clientConfig.getStorepass().toCharArray());
+                TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(clientConfig.getKeyalg());
+                trustManagerFactory.init(keyStore);
+                return SslContextBuilder.forClient().trustManager(trustManagerFactory).build();
+            } catch (Exception e) {
+                throw new RuntimeException("加载SSL证书异常", e);
+            }
+        }
+        return null;
     }
 
     public void close() {

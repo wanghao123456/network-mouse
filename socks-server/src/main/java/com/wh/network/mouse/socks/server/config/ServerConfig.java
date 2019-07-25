@@ -7,6 +7,30 @@ import lombok.Data;
 public class ServerConfig {
 
     /**
+     * 链接是否加密
+     */
+    private boolean ssl;
+    /**
+     * 证书类型
+     * 链接加密时有效
+     */
+    private String storetype;
+    /**
+     * 加密算法
+     * 链接加密时有效
+     */
+    private String keyalg;
+    /**
+     * 证书密码
+     * 链接加密时有效
+     */
+    private String keypass;
+    /**
+     * 获取证书信息密码
+     * 链接加密时有效
+     */
+    private String storepass;
+    /**
      * 端口号
      */
     private int port;

@@ -9,6 +9,7 @@ import io.netty.handler.codec.socksx.v5.Socks5CommandRequestDecoder;
 import io.netty.handler.codec.socksx.v5.Socks5InitialRequestDecoder;
 import io.netty.handler.codec.socksx.v5.Socks5PasswordAuthRequestDecoder;
 import io.netty.handler.codec.socksx.v5.Socks5ServerEncoder;
+import io.netty.handler.ssl.SslContext;
 import io.netty.handler.timeout.IdleStateHandler;
 
 public class ChannelInitializerHandler extends ChannelInitializer {
@@ -17,13 +18,19 @@ public class ChannelInitializerHandler extends ChannelInitializer {
 
     private EventLoopGroup proxy;
 
-    public ChannelInitializerHandler(ServerConfig serverConfig, EventLoopGroup proxy) {
+    private SslContext sslContext;
+
+    public ChannelInitializerHandler(ServerConfig serverConfig, EventLoopGroup proxy, SslContext sslContext) {
         this.serverConfig = serverConfig;
         this.proxy = proxy;
+        this.sslContext = sslContext;
     }
 
     @Override
     protected void initChannel(Channel ch) throws Exception {
+        if (serverConfig.isSsl()) {
+            ch.pipeline().addFirst(sslContext.newHandler(ch.alloc()));
+        }
         ch.pipeline().addLast(
                 new IdleStateHandler(serverConfig.getReaderIdleTime(), serverConfig.getWriterIdleTime(), serverConfig.getAllIdleTime()),
                 Socks5ServerEncoder.DEFAULT,
