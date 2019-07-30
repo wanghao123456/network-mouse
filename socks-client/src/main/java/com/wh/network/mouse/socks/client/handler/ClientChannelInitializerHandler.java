@@ -1,6 +1,6 @@
 package com.wh.network.mouse.socks.client.handler;
 
-import com.wh.network.mouse.handler.CloseEventHandler;
+import com.wh.network.mouse.handler.ExceptionCaughtHandler;
 import com.wh.network.mouse.socks.client.config.ClientConfig;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
@@ -33,7 +33,7 @@ public class ClientChannelInitializerHandler extends ChannelInitializer {
                 new Socks5InitialRequestHandler(),
                 new Socks5CommandRequestDecoder(),
                 new Socks5CommandRequestHandler(proxy, NioSocketChannel.class, clientConfig, sslContext),
-                new CloseEventHandler()
+                new ExceptionCaughtHandler()
         );
     }
 }
