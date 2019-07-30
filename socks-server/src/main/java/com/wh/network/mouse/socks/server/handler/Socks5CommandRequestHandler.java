@@ -1,17 +1,14 @@
 package com.wh.network.mouse.socks.server.handler;
 
 import com.wh.network.mouse.handler.ClientToRemoteListener;
-import com.wh.network.mouse.handler.RemoteToClientHandler;
 import com.wh.network.mouse.socks.server.config.ServerConfig;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.SimpleChannelInboundHandler;
-import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.codec.socksx.v5.DefaultSocks5CommandRequest;
 import io.netty.handler.codec.socksx.v5.Socks5CommandType;
 
@@ -34,12 +31,7 @@ public class Socks5CommandRequestHandler extends SimpleChannelInboundHandler<Def
             bootstrap.group(eventLoopGroup)
                     .channel(channelClass)
                     .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, serverConfig.getConnectTimeout() * 1000)
-                    .handler(new ChannelInitializer<SocketChannel>() {
-                        @Override
-                        protected void initChannel(SocketChannel ch) throws Exception {
-                            ch.pipeline().addLast(new RemoteToClientHandler(ctx));
-                        }
-                    });
+                    .handler(new ProxyChannelInitializerHandler(ctx));
 
             ChannelFuture channelFuture = bootstrap.connect(msg.dstAddr(), msg.dstPort());
             channelFuture.addListener(new ClientToRemoteListener(ctx, msg));

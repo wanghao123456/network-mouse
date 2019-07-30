@@ -38,4 +38,9 @@ public class FileUtil {
         }
         throw new RuntimeException("配置文件：{" + filePath + "}不存在");
     }
+
+    public static long lastModified(String filePath) {
+        File configFile = new File(filePath);
+        return configFile.lastModified();
+    }
 }

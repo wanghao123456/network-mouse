@@ -11,7 +11,7 @@ import io.netty.handler.codec.socksx.v5.Socks5InitialRequestDecoder;
 import io.netty.handler.codec.socksx.v5.Socks5ServerEncoder;
 import io.netty.handler.ssl.SslContext;
 
-public class ChannelInitializerHandler extends ChannelInitializer {
+public class ClientChannelInitializerHandler extends ChannelInitializer {
 
     private ClientConfig clientConfig;
 
@@ -19,7 +19,7 @@ public class ChannelInitializerHandler extends ChannelInitializer {
 
     private SslContext sslContext;
 
-    public ChannelInitializerHandler(ClientConfig clientConfig, EventLoopGroup proxy, SslContext sslContext) {
+    public ClientChannelInitializerHandler(ClientConfig clientConfig, EventLoopGroup proxy, SslContext sslContext) {
         this.clientConfig = clientConfig;
         this.proxy = proxy;
         this.sslContext = sslContext;

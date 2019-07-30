@@ -5,10 +5,17 @@ import io.netty.util.internal.StringUtil;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class UserConfig {
 
     private static volatile HashMap<String, UserInfo> userInfoHashMap;
+
+    private static long userConfigFileLastModified;
+
+    private static final ScheduledExecutorService SCHEDULED_EXECUTOR_SERVICE = Executors.newSingleThreadScheduledExecutor();
 
     public static UserInfo auth(String userName, String passWord) {
         if (!StringUtil.isNullOrEmpty(userName) && !StringUtil.isNullOrEmpty(passWord)) {
@@ -30,5 +37,13 @@ public class UserConfig {
     }
 
     public static void monitorUserInfo(String filePath) {
+        userConfigFileLastModified = FileUtil.lastModified(filePath);
+        SCHEDULED_EXECUTOR_SERVICE.scheduleWithFixedDelay(() -> {
+            long tempUserConfigFileLastModified = FileUtil.lastModified(filePath);
+            if (tempUserConfigFileLastModified > userConfigFileLastModified) {
+                userConfigFileLastModified = tempUserConfigFileLastModified;
+                loadUserInfo(filePath);
+            }
+        }, 1, 1, TimeUnit.MINUTES);
     }
 }

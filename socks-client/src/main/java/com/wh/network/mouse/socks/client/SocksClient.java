@@ -1,7 +1,7 @@
 package com.wh.network.mouse.socks.client;
 
 import com.wh.network.mouse.socks.client.config.ClientConfig;
-import com.wh.network.mouse.socks.client.handler.ChannelInitializerHandler;
+import com.wh.network.mouse.socks.client.handler.ClientChannelInitializerHandler;
 import com.wh.network.mouse.util.ConfigConstants;
 import com.wh.network.mouse.util.FileUtil;
 import io.netty.bootstrap.ServerBootstrap;
@@ -9,8 +9,6 @@ import io.netty.channel.ChannelFuture;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.handler.logging.LogLevel;
-import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import lombok.extern.slf4j.Slf4j;
@@ -37,8 +35,8 @@ public class SocksClient {
             ServerBootstrap serverBootstrap = new ServerBootstrap();
             serverBootstrap.group(boss, worker)
                     .channel(NioServerSocketChannel.class)
-                    .handler(new LoggingHandler(LogLevel.ERROR))
-                    .childHandler(new ChannelInitializerHandler(clientConfig, proxy, sslContext));
+//                    .handler(new LoggingHandler(LogLevel.DEBUG))
+                    .childHandler(new ClientChannelInitializerHandler(clientConfig, proxy, sslContext));
             ChannelFuture channelFuture = serverBootstrap.bind(clientConfig.getLocalPort()).sync();
             channelFuture.channel().closeFuture().sync();
         } catch (Exception e) {

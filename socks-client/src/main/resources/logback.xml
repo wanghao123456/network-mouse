@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<configuration debug="true" scan="true" scanPeriod="30 secondes">
+<configuration debug="false" scan="false" scanPeriod="30 secondes">
 
     <property name="CONSOLE_APPENDER_NAME" value="CONSOLE"/>
     <property name="FILE_APPENDER_NAME" value="FILE"/>
@@ -9,7 +9,7 @@
               value="%d{yyyy-MM-dd HH:mm:ss.SSSS} - [Thread : %thread] - [level : %-5level] - [%class : %method : %line] - %msg %n"/>
     <property name="FILE_NAME_PATTERN" value="%d{yyyy-MM-dd}.%i.log"/>
     <property name="FILE_PATH" value="log/network-mouse-socks-client/"/>
-    <property name="ROOT_LEVEL" value="debug"/>
+    <property name="ROOT_LEVEL" value="ERROR"/>
 
     <appender name="${CONSOLE_APPENDER_NAME}" class="ch.qos.logback.core.ConsoleAppender">
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
@@ -23,7 +23,7 @@
             <FileNamePattern>${FILE_PATH}${FILE_NAME_PATTERN}</FileNamePattern>
             <MaxHistory>30</MaxHistory>
             <maxFileSize>10MB</maxFileSize>
-            <totalSizeCap>10GB</totalSizeCap>
+            <totalSizeCap>100MB</totalSizeCap>
         </rollingPolicy>
         <encoder>
             <pattern>${FILE_LOG_PATTERN}</pattern>
@@ -31,7 +31,7 @@
         </encoder>
     </appender>
 
-    <root level="${ROOT_LEVEVL}">
+    <root level="${ROOT_LEVEL}">
         <appender-ref ref="${CONSOLE_APPENDER_NAME}"/>
         <appender-ref ref="${FILE_APPENDER_NAME}"/>
     </root>
