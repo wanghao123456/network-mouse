@@ -11,5 +11,5 @@
   "passWord": "admin",
   "workThreads": 1,
   "proxyThreads": 1,
-  "connectTimeout": 3
+  "connectTimeout": 30
 }
