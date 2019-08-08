@@ -27,3 +27,5 @@
    3. linux服务端和客户端全部使用 nohup java -jar ${jar包文件名字} & 即可。
    4. 启动服务需要相应的配置文件，放在config文件目录下，默认读取项目同级目录下config文件，需要自定义配置文件目录的可以通过启动参数指定目录。
    5. 生成自签证书命令 keytool -genkey -alias network-mouse -keypass network-mouse -storepass network-mouse -keyalg RSA -keysize 1024 -validity 36500 -storetype JKS -keystore E:/network-mouse/config/network-mouse.jks 也可以使用已有证书。
+### 作为依赖组件使用
+   1. 本项目使用Maven构建，需要以组件的方式集成此项目的只需要加入Maven依赖配置即可。
