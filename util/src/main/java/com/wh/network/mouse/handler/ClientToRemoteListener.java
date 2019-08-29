@@ -7,6 +7,7 @@ import io.netty.handler.codec.socksx.v5.DefaultSocks5CommandRequest;
 import io.netty.handler.codec.socksx.v5.DefaultSocks5CommandResponse;
 import io.netty.handler.codec.socksx.v5.Socks5CommandResponse;
 import io.netty.handler.codec.socksx.v5.Socks5CommandStatus;
+import io.netty.handler.codec.socksx.v5.Socks5ServerEncoder;
 
 public class ClientToRemoteListener implements ChannelFutureListener {
 
@@ -28,5 +29,6 @@ public class ClientToRemoteListener implements ChannelFutureListener {
             commandResponse = new DefaultSocks5CommandResponse(Socks5CommandStatus.FAILURE, msg.dstAddrType());
         }
         ctx.writeAndFlush(commandResponse);
+        ctx.pipeline().remove(Socks5ServerEncoder.class);
     }
 }

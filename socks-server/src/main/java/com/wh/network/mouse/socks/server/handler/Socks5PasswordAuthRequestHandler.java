@@ -7,6 +7,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.socksx.v5.DefaultSocks5PasswordAuthRequest;
 import io.netty.handler.codec.socksx.v5.DefaultSocks5PasswordAuthResponse;
+import io.netty.handler.codec.socksx.v5.Socks5PasswordAuthRequestDecoder;
 import io.netty.handler.codec.socksx.v5.Socks5PasswordAuthResponse;
 import io.netty.handler.codec.socksx.v5.Socks5PasswordAuthStatus;
 import io.netty.handler.traffic.ChannelTrafficShapingHandler;
@@ -27,7 +28,7 @@ public class Socks5PasswordAuthRequestHandler extends SimpleChannelInboundHandle
                 ctx.pipeline().addFirst(new ChannelTrafficShapingHandler(userInfo.getWriteLimit() << 10,
                         userInfo.getReadLimit() << 10, userInfo.getCheckInterval() * 1000, userInfo.getMaxTime() * 1000));
             }
-            ctx.pipeline().remove(this);
+            ctx.pipeline().remove(this).remove(Socks5PasswordAuthRequestDecoder.class);
         } else {
             log.info("用户：{} 身份验证失败，详细信息：{}", msg.username(), msg);
             Socks5PasswordAuthResponse socks5PasswordAuthResponse = new DefaultSocks5PasswordAuthResponse(Socks5PasswordAuthStatus.FAILURE);
