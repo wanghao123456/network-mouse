@@ -18,4 +18,6 @@ public class ConfigConstants {
     public static final String CLIENT_DEFAULT_CONFIG_FILE_PATH = CONFIG_PATH + CLIENT_DEFAULT_CONFIG_FILE_NAME;
     public static final String USER_DEFAULT_CONFIG_FILE_PATH = CONFIG_PATH + USER_DEFAULT_CONFIG_FILE_NAME;
     public static final String KEYSTORE_DEFAULT_CONFIG_FILE_PATH = CONFIG_PATH + KEYSTORE_DEFAULT_CONFIG_FILE_NAME;
+
+    public static final String MOVED_PERMANENTLY_URL = "https://github.com/wanghao123456/network-mouse";
 }

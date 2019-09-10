@@ -10,6 +10,7 @@ import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.socksx.v5.DefaultSocks5CommandRequest;
+import io.netty.handler.codec.socksx.v5.Socks5CommandRequestDecoder;
 import io.netty.handler.codec.socksx.v5.Socks5CommandType;
 import io.netty.handler.ssl.SslContext;
 
@@ -38,8 +39,9 @@ public class Socks5CommandRequestHandler extends SimpleChannelInboundHandler<Def
 
             ChannelFuture channelFuture = bootstrap.connect(msg.dstAddr(), msg.dstPort());
             channelFuture.addListener(new ClientToRemoteListener(ctx, msg));
+            ctx.pipeline().remove(this).remove(Socks5CommandRequestDecoder.class);
         } else {
-            ctx.fireChannelRead(msg);
+            ctx.close();
         }
     }
 }
